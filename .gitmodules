@@ -1,0 +1,9 @@
+[submodule "mujin-face"]
+	path = mujin-face
+	url = https://github.com/white0221/mujin-face.git
+[submodule "mujin-aruco"]
+	path = mujin-aruco
+	url = https://github.com/white0221/mujin-aruco.git
+[submodule "mujin-magnet"]
+	path = mujin-magnet
+	url = https://github.com/white0221/mujin-magnet.git
