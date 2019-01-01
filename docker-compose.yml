@@ -1,0 +1,38 @@
+version: '3'
+services:
+  dose:
+    build: .
+    ports:
+      - 5000:5000
+    volumes:
+      - .:/app
+    depends_on:
+      - face
+      - aruco
+      - magnet
+    links:
+      - face
+      - aruco
+      - magnet
+
+  face:
+    build: ./mujin-face
+    ports:
+      - 5001:5000
+    volumes:
+      - ./mujin-face:/app
+  aruco:
+    build: ./mujin-aruco
+    ports:
+      - 5002:5000
+    volumes:
+      - ./mujin-aruco:/app
+  magnet:
+    build: ./mujin-magnet
+    ports:
+      - 5003:5000
+    volumes:
+      - ./mujin-magnet:/app
+
+  
+
