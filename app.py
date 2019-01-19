@@ -1,6 +1,5 @@
 import requests
 
-from flask import Flask
 
 PROTOCOL_BASE = "http://"
 
@@ -14,18 +13,23 @@ MAGNET_PORT = "5000"
 MAGNET_HOSTNAME = "magnet"
 
 
-app = Flask(__name__)
-@app.route('/')
 def main():
     face_url = build_url(FACE_HOSTNAME, FACE_PORT)
     aruco_url = build_url(ARUCO_HOSTNAME, ARUCO_PORT)
     magnet_url = build_url(MAGNET_HOSTNAME, MAGNET_PORT)
 
-    return 'hello'
+    while(True):
+        # 扉が開くまでループさせる
+        door_closed = True
+        while(door_closed):
+            magnet_response = requests.get(magnet)
+            magnet_response_json = magnet_response.json()
+            if magnet_response_json["state"] == 1:
+                door_closed = False
 
 def build_url(host, port):
     return PROTOCL_BASE + host + ":" + port
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    main()
