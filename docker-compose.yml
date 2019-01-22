@@ -33,6 +33,8 @@ services:
       - 5003:5000
     volumes:
       - ./mujin-magnet:/app
+    devices:
+      - /dev/gpiomem:/dev/gpiomem
 
   
 
