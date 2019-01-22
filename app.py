@@ -19,13 +19,12 @@ def main():
     magnet_url = build_url(MAGNET_HOSTNAME, MAGNET_PORT)
 
     while(True):
-        # 扉が開くまでループさせる
-        door_closed = True
-        while(door_closed):
-            magnet_response = requests.get(magnet)
-            magnet_response_json = magnet_response.json()
-            if magnet_response_json["state"] == 1:
-                door_closed = False
+        response = requests.get(magnet_url, stream=True)
+        for line in response.iter_lines():
+            if line:
+                response_json = line.json()
+                if response_json["state"] == 1:
+                    print("open")
 
 def build_url(host, port):
     return PROTOCL_BASE + host + ":" + port
