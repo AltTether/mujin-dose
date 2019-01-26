@@ -1,3 +1,4 @@
+import json
 import requests
 
 
@@ -22,12 +23,12 @@ def main():
         response = requests.get(magnet_url, stream=True)
         for line in response.iter_lines():
             if line:
-                response_json = line.json()
+                response_json = json.loads(line) 
                 if response_json["state"] == 1:
                     print("open")
 
 def build_url(host, port):
-    return PROTOCL_BASE + host + ":" + port
+    return PROTOCOL_BASE + host + ":" + port
 
 
 if __name__ == '__main__':
