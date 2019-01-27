@@ -9,9 +9,9 @@ HOST_KEYS = ['FACE_HOST', 'ARUCO_HOST', 'MAGNET_HOST']
 PORT_KEYS = ['FACE_PORT', 'ARUCO_PORT', 'MAGNET_PORT']
 
 CONFIG = {'PROTOCOL_BASE': 'http://',
-          'FACE_HOST': 'face', 'FACE_PORT': '5000',
-          'ARUCO_HOST': 'aruco', 'ARUCO_PORT': '5000',
-          'MAGNET_HOST': 'magnet', 'MAGNET_PORT': '5000'}
+          'FACE_HOST': 'face', 'FACE_PORT': '5001',
+          'ARUCO_HOST': 'aruco', 'ARUCO_PORT': '5002',
+          'MAGNET_HOST': 'magnet', 'MAGNET_PORT': '5003'}
 
 logger = Logger()
 
@@ -34,6 +34,10 @@ def main():
                 if response_json['state'] == 0:
                     break
         logger.info('mujin item case\'s door is opened')
+
+        logger.info('mujin service detecting face')
+        response = requests.get(face_url, stream=True)
+        logger.info('mujin service get response : {}'.format(json.dumps(response.json())))
 
 
 def build_url(host, port):
