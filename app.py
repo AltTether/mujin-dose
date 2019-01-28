@@ -66,12 +66,14 @@ def main():
         after_ids_json = response.json()['ids']
         logger.info('get ids in item case: {}'.format(json.dumps(after_ids_json)))
 
+        # 購入、追加した商品のidsを取得する
         added_item_ids = list(set(after_ids_json) - set(before_ids_json))
         bought_item_ids = list(set(before_ids_json) - set(after_ids_json))
 
         logger.info('added item ids: {}'.format(added_item_ids))
         logger.info('bought_item_ids: {}'.format(bought_item_ids))
 
+        # リクエストプールに購入商品をなげる
         post_request_json = {"user_id": int(user_id), "items": []}
         for item_id in bought_item_ids:
             item_json = {"item_id": item_id, "volume": 1}
