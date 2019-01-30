@@ -7,26 +7,10 @@ services:
     volumes:
       - .:/app
     depends_on:
-      - face
-      - aruco
       - magnet
     links:
-      - face
-      - aruco
       - magnet
 
-  face:
-    build: ./mujin-face
-    ports:
-      - 5001:5000
-    volumes:
-      - ./mujin-face:/app
-  aruco:
-    build: ./mujin-aruco
-    ports:
-      - 5002:5000
-    volumes:
-      - ./mujin-aruco:/app
   magnet:
     build: ./mujin-magnet
     ports:
@@ -35,6 +19,3 @@ services:
       - ./mujin-magnet:/app
     devices:
       - /dev/gpiomem:/dev/gpiomem
-
-  
-
