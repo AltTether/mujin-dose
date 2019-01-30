@@ -5,14 +5,15 @@ import requests
 from src import Logger
 
 
-HOST_KEYS = ['FACE_HOST', 'ARUCO_HOST', 'MAGNET_HOST', "POOL_HOST"]
-PORT_KEYS = ['FACE_PORT', 'ARUCO_PORT', 'MAGNET_PORT', "POOL_PORT"]
+HOST_KEYS = ['FACE_HOST', 'ARUCO_HOST', 'MAGNET_HOST', "POOL_HOST", "WEB_HOST"]
+PORT_KEYS = ['FACE_PORT', 'ARUCO_PORT', 'MAGNET_PORT', "POOL_PORT", "WEB_PORT"]
 
 CONFIG = {'PROTOCOL_BASE': 'http://',
           'FACE_HOST': 'face', 'FACE_PORT': '5001',
           'ARUCO_HOST': 'aruco', 'ARUCO_PORT': '5002',
           'MAGNET_HOST': 'magnet', 'MAGNET_PORT': '5003',
-          'POOL_HOST': 'localhost', 'POOL_PORT': '5004'}
+          'POOL_HOST': 'localhost', 'POOL_PORT': '5004',
+          'WEB_HOST': 'localhost', 'WEB_PORT': None}
 
 logger = Logger()
 
@@ -23,6 +24,7 @@ def main():
     aruco_url = build_url(CONFIG['ARUCO_HOST'], CONFIG['ARUCO_PORT'])
     magnet_url = build_url(CONFIG['MAGNET_HOST'], CONFIG['MAGNET_PORT'])
     pool_url = build_url(CONFIG['POOL_HOST'], CONFIG['POOL_PORT'])
+    web_url = build_url(CONFIG['WEB_HOST'], CONFIG['WEB_PORT'])
 
     logger.info('mujin service is starting')
     while(True):
@@ -38,7 +40,7 @@ def main():
         logger.info('mujin item case\'s door is opened')
 
         # 商品検出する
-        response = requests.get(aruco_url+'/items')
+        response = requests.get(aruco_url+'/item')
         before_ids_json = response.json()['ids']
         logger.info('get ids in item case: {}'.format(json.dumps(before_ids_json)))
 
@@ -62,7 +64,7 @@ def main():
                     break
         logger.info('mujin item case\'s door is closed')
 
-        response = requests.get(aruco_url+'/items')
+        response = requests.get(aruco_url+'/item')
         after_ids_json = response.json()['ids']
         logger.info('get ids in item case: {}'.format(json.dumps(after_ids_json)))
 
@@ -73,10 +75,19 @@ def main():
         logger.info('added item ids: {}'.format(added_item_ids))
         logger.info('bought_item_ids: {}'.format(bought_item_ids))
 
+
         # リクエストプールに購入商品をなげる
-        post_request_json = {"user_id": int(user_id), "items": []}
+        post_request_json = {"user_id": int(user_id), "user_name": user_name, "items": []}
         for item_id in bought_item_ids:
-            item_json = {"item_id": item_id, "volume": 1}
+            # 各アイテムに対して情報を取得する
+            print(web_url+'/item')
+            item_response = requests.get(web_url+'/item', params={"id": item_id})
+            logger.info(item_response)
+            item_response_json = item_response.json()["item"]
+            item_json = {"item_id": item_id,
+                         "item_name": item_response_json["name"],
+                         "value": item_response_json["value"],
+                         "volume": 1}
             post_request_json["items"].append(item_json)
 
         logger.info('posting request to pool')
@@ -86,8 +97,11 @@ def main():
         logger.info('complete posting')
 
 
-def build_url(host, port):
-    return CONFIG['PROTOCOL_BASE'] + host + ':' + port
+def build_url(host, port=None):
+    if port is None:
+        return CONFIG['PROTOCOL_BASE'] + host
+    else:
+        return CONFIG['PROTOCOL_BASE'] + host + ':' + port
 
 def set_CONFIG():
     for host in HOST_KEYS:
