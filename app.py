@@ -18,7 +18,7 @@ CONFIG = {'PROTOCOL_BASE': 'http://',
 logger = Logger()
 
 def main():
-    set_CONFIG()
+    set_config()
 
     face_url = build_url(CONFIG['FACE_HOST'], CONFIG['FACE_PORT'])
     aruco_url = build_url(CONFIG['ARUCO_HOST'], CONFIG['ARUCO_PORT'])
@@ -60,8 +60,9 @@ def main():
         for line in response.iter_lines():
             if line:
                 response_json = json.loads(line.decode('utf-8'))
-                if response_json['state'] == 1:
+                if response_json["state"] == 1:
                     break
+
         logger.info('mujin item case\'s door is closed')
 
         response = requests.get(aruco_url+'/item')
@@ -80,7 +81,6 @@ def main():
         post_request_json = {"user_id": int(user_id), "user_name": user_name, "items": []}
         for item_id in bought_item_ids:
             # 各アイテムに対して情報を取得する
-            print(web_url+'/item')
             item_response = requests.get(web_url+'/item', params={"id": item_id})
             logger.info(item_response)
             item_response_json = item_response.json()["item"]
@@ -96,14 +96,13 @@ def main():
                                  headers={'Content-Type': 'application/json'})
         logger.info('complete posting')
 
-
 def build_url(host, port=None):
     if port is None:
         return CONFIG['PROTOCOL_BASE'] + host
     else:
         return CONFIG['PROTOCOL_BASE'] + host + ':' + port
 
-def set_CONFIG():
+def set_config():
     for host in HOST_KEYS:
         if os.getenv(host):
             CONFIG[host] = os.environ[host]
@@ -112,6 +111,11 @@ def set_CONFIG():
         if os.getenv(port):
             CONFIG[port] = os.environ[port]
 
+def build_url(host, port=None):
+    if port is not None:
+        return CONFIG['PROTOCOL_BASE'] + host + ":" + port
+    else:
+        return CONFIG['PROTOCOL_BASE'] + host
 
 
 if __name__ == '__main__':
